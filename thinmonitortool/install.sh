@@ -45,7 +45,13 @@ fi
 # 必要なパッケージをインストール
 echo -e "${GREEN}[1/5] システムパッケージをインストール中...${NC}"
 sudo apt update
-sudo apt install -y python3 python3-venv python3-pip curl unzip
+sudo apt install -y \
+    python3 python3-venv python3-pip \
+    curl unzip \
+    python3-pyqt5 \
+    libxcb-xinerama0 \
+    bluez bluetooth \
+    fonts-noto-cjk
 
 # バージョン情報を取得
 echo -e "${GREEN}[2/5] バージョン情報を取得中...${NC}"
