@@ -67,14 +67,41 @@ echo "  日付: $DATE"
 echo ""
 
 # ZIPをダウンロード
-echo -e "${GREEN}[3/5] アプリケーションをダウンロード中...${NC}"
+echo -e "${GREEN}[3/6] アプリケーションをダウンロード中...${NC}"
 TEMP_DIR=$(mktemp -d)
 curl -fsSL "$ZIP_URL" -o "$TEMP_DIR/app.zip"
 
+# 認証情報のバックアップ（既存インストールがある場合）
+BACKUP_DIR="$TEMP_DIR/backup"
+if [ -d "$INSTALL_DIR" ]; then
+    echo -e "${GREEN}[4/6] 認証情報をバックアップ中...${NC}"
+    mkdir -p "$BACKUP_DIR"
+
+    # バックアップ対象ファイル
+    for file in credentials.json token.json spotify_credentials.json .spotify_token_cache .bluetooth_settings.json deck_config.json; do
+        if [ -f "$INSTALL_DIR/$file" ]; then
+            cp "$INSTALL_DIR/$file" "$BACKUP_DIR/"
+            echo "  バックアップ: $file"
+        fi
+    done
+fi
+
 # 展開
-echo -e "${GREEN}[4/5] ファイルを展開中...${NC}"
+echo -e "${GREEN}[5/6] ファイルを展開中...${NC}"
 mkdir -p "$INSTALL_DIR"
 unzip -o "$TEMP_DIR/app.zip" -d "$INSTALL_DIR"
+
+# 認証情報のリストア
+if [ -d "$BACKUP_DIR" ]; then
+    echo "  認証情報をリストア中..."
+    for file in "$BACKUP_DIR"/*; do
+        if [ -f "$file" ]; then
+            filename=$(basename "$file")
+            cp "$file" "$INSTALL_DIR/"
+            echo "  リストア: $filename"
+        fi
+    done
+fi
 
 # バージョンファイルを作成
 cat > "$INSTALL_DIR/.version" << EOF
@@ -89,7 +116,7 @@ EOF
 rm -rf "$TEMP_DIR"
 
 # Python仮想環境をセットアップ
-echo -e "${GREEN}[5/5] Python環境をセットアップ中...${NC}"
+echo -e "${GREEN}[6/6] Python環境をセットアップ中...${NC}"
 cd "$INSTALL_DIR"
 python3 -m venv --system-site-packages venv
 source venv/bin/activate
