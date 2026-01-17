@@ -42,13 +42,13 @@ Raspberry Piはブラウザ認証が難しいため、**別端末（PC等）で�
 }
 ```
 
-### 2. 別端末で認証を実行
+### 2. 別端末（Windows）で認証を実行
 
-PC等で認証セットアップスクリプトを実行：
+Windows PCで認証セットアップスクリプトを実行：
 
-```bash
-pip install google-auth-oauthlib google-api-python-client spotipy
-python auth_setup.py all
+```cmd
+py -m pip install google-auth-oauthlib google-api-python-client spotipy
+py auth_setup.py all
 ```
 
 ### 3. Raspberry Piにファイルをコピー
