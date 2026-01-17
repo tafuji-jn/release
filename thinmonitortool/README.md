@@ -10,9 +10,13 @@ Raspberry Piで以下のコマンドを実行：
 curl -fsSL https://raw.githubusercontent.com/tafuji-jn/release/main/thinmonitortool/install.sh | bash
 ```
 
-## 認証ファイルの準備
+## 認証セットアップ
 
-### credentials.json（Google Calendar用）
+Raspberry Piはブラウザ認証が難しいため、**別端末（PC等）で認証を行い、トークンファイルをコピー**します。
+
+### 1. API認証情報の準備
+
+#### credentials.json（Google Calendar用）
 
 1. [Google Cloud Console](https://console.cloud.google.com/) にアクセス
 2. プロジェクトを作成（または既存のを選択）
@@ -21,7 +25,7 @@ curl -fsSL https://raw.githubusercontent.com/tafuji-jn/release/main/thinmonitort
 5. アプリの種類:「デスクトップアプリ」を選択
 6. 作成後「JSONをダウンロード」→ `credentials.json` として保存
 
-### spotify_credentials.json（Spotify用）
+#### spotify_credentials.json（Spotify用）
 
 1. [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) にアクセス
 2. 「Create App」をクリック
@@ -38,30 +42,29 @@ curl -fsSL https://raw.githubusercontent.com/tafuji-jn/release/main/thinmonitort
 }
 ```
 
-## セットアップ手順
+### 2. 別端末で認証を実行
 
-### 1. 認証ファイルを配置
-
-上記で作成したファイルをインストールディレクトリに配置：
+PC等で認証セットアップスクリプトを実行：
 
 ```bash
-scp credentials.json pi@raspberrypi:~/thinmonitortool/
-scp spotify_credentials.json pi@raspberrypi:~/thinmonitortool/
+pip install google-auth-oauthlib google-api-python-client spotipy
+python auth_setup.py all
 ```
 
-### 2. アプリを起動
+### 3. Raspberry Piにファイルをコピー
+
+認証完了後、以下のファイルをRaspberry Piにコピー：
+
+```bash
+scp credentials.json token.pickle spotify_credentials.json .spotify_token_cache pi@raspberrypi:~/thinmonitortool/
+```
+
+### 4. アプリを起動
 
 ```bash
 cd ~/thinmonitortool
 ./start.sh
 ```
-
-### 3. 認証を実行
-
-アプリ起動後、設定メニュー（画面左端からスワイプ）から：
-
-- 「Google カレンダー認証」- QRコードをスマホでスキャンして認証
-- 「Spotify 認証」- ブラウザで認証
 
 ## 自動起動設定
 
