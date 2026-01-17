@@ -30,7 +30,7 @@ Raspberry Piはブラウザ認証が難しいため、**Windows PCで認証を�
 1. [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) にアクセス
 2. 「Create App」をクリック
 3. アプリ名、説明を入力
-4. Redirect URI に `http://localhost:8888/callback` を追加
+4. Redirect URI に `http://127.0.0.1:8888/callback` を追加
 5. 作成後「Settings」からClient IDとClient Secretを確認
 6. 以下の形式でJSONファイルを作成：
 
@@ -38,7 +38,7 @@ Raspberry Piはブラウザ認証が難しいため、**Windows PCで認証を�
 {
   "client_id": "ここにClient ID",
   "client_secret": "ここにClient Secret",
-  "redirect_uri": "http://localhost:8888/callback"
+  "redirect_uri": "http://127.0.0.1:8888/callback"
 }
 ```
 
