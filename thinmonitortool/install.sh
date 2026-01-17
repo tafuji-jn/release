@@ -54,15 +54,50 @@ sudo apt install -y \
     pulseaudio-utils \
     fonts-noto-cjk
 
-# raspotifyをインストール（Spotify Connect対応）
-echo -e "${GREEN}[2/7] raspotifyをインストール中...${NC}"
-if ! systemctl list-unit-files | grep -q raspotify; then
-    curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
-    sudo systemctl enable raspotify
-    sudo systemctl start raspotify
-    echo "  raspotifyをインストールしました"
+# spotifydをインストール（Spotify Connect対応）
+echo -e "${GREEN}[2/7] spotifydをインストール中...${NC}"
+if ! command -v spotifyd &> /dev/null; then
+    # ビルド済みバイナリをダウンロード
+    SPOTIFYD_URL="https://github.com/Spotifyd/spotifyd/releases/download/v0.3.5/spotifyd-linux-armv6-slim.tar.gz"
+    TEMP_SPOTIFYD=$(mktemp -d)
+    wget -q "$SPOTIFYD_URL" -O "$TEMP_SPOTIFYD/spotifyd.tar.gz"
+    tar -xzf "$TEMP_SPOTIFYD/spotifyd.tar.gz" -C "$TEMP_SPOTIFYD"
+    sudo mv "$TEMP_SPOTIFYD/spotifyd" /usr/local/bin/
+    rm -rf "$TEMP_SPOTIFYD"
+
+    # 設定ファイルを作成
+    mkdir -p ~/.config/spotifyd
+    cat > ~/.config/spotifyd/spotifyd.conf << 'SPOTIFYD_CONF'
+[global]
+device_name = "raspotify"
+backend = "alsa"
+device = "default"
+bitrate = 320
+SPOTIFYD_CONF
+
+    # サービスファイルを作成
+    sudo tee /etc/systemd/system/spotifyd.service > /dev/null << 'SPOTIFYD_SERVICE'
+[Unit]
+Description=Spotifyd
+After=network.target sound.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/usr/local/bin/spotifyd --no-daemon
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+SPOTIFYD_SERVICE
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable spotifyd
+    sudo systemctl start spotifyd
+    echo "  spotifydをインストールしました"
 else
-    echo "  raspotifyは既にインストール済みです"
+    echo "  spotifydは既にインストール済みです"
 fi
 
 # バージョン情報を取得
