@@ -43,7 +43,7 @@ if [ -d "$INSTALL_DIR" ]; then
 fi
 
 # 必要なパッケージをインストール
-echo -e "${GREEN}[1/5] システムパッケージをインストール中...${NC}"
+echo -e "${GREEN}[1/7] システムパッケージをインストール中...${NC}"
 sudo apt update
 sudo apt install -y \
     python3 python3-venv python3-pip \
@@ -54,8 +54,19 @@ sudo apt install -y \
     pulseaudio-utils \
     fonts-noto-cjk
 
+# raspotifyをインストール（Spotify Connect対応）
+echo -e "${GREEN}[2/7] raspotifyをインストール中...${NC}"
+if ! systemctl list-unit-files | grep -q raspotify; then
+    curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
+    sudo systemctl enable raspotify
+    sudo systemctl start raspotify
+    echo "  raspotifyをインストールしました"
+else
+    echo "  raspotifyは既にインストール済みです"
+fi
+
 # バージョン情報を取得
-echo -e "${GREEN}[2/5] バージョン情報を取得中...${NC}"
+echo -e "${GREEN}[3/7] バージョン情報を取得中...${NC}"
 VERSION_INFO=$(curl -fsSL "$VERSION_URL")
 VERSION=$(echo "$VERSION_INFO" | grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4)
 COMMIT=$(echo "$VERSION_INFO" | grep -o '"commit"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4)
@@ -67,14 +78,14 @@ echo "  日付: $DATE"
 echo ""
 
 # ZIPをダウンロード
-echo -e "${GREEN}[3/6] アプリケーションをダウンロード中...${NC}"
+echo -e "${GREEN}[4/7] アプリケーションをダウンロード中...${NC}"
 TEMP_DIR=$(mktemp -d)
 curl -fsSL "$ZIP_URL" -o "$TEMP_DIR/app.zip"
 
 # 認証情報のバックアップ（既存インストールがある場合）
 BACKUP_DIR="$TEMP_DIR/backup"
 if [ -d "$INSTALL_DIR" ]; then
-    echo -e "${GREEN}[4/6] 認証情報をバックアップ中...${NC}"
+    echo -e "${GREEN}[5/7] 認証情報をバックアップ中...${NC}"
     mkdir -p "$BACKUP_DIR"
 
     # バックアップ対象ファイル
@@ -87,7 +98,7 @@ if [ -d "$INSTALL_DIR" ]; then
 fi
 
 # 展開
-echo -e "${GREEN}[5/6] ファイルを展開中...${NC}"
+echo -e "${GREEN}[6/7] ファイルを展開中...${NC}"
 mkdir -p "$INSTALL_DIR"
 unzip -o "$TEMP_DIR/app.zip" -d "$INSTALL_DIR"
 
@@ -116,7 +127,7 @@ EOF
 rm -rf "$TEMP_DIR"
 
 # Python仮想環境をセットアップ
-echo -e "${GREEN}[6/6] Python環境をセットアップ中...${NC}"
+echo -e "${GREEN}[7/7] Python環境をセットアップ中...${NC}"
 cd "$INSTALL_DIR"
 python3 -m venv --system-site-packages venv
 source venv/bin/activate
