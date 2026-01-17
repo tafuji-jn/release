@@ -48,9 +48,10 @@ sudo apt update
 sudo apt install -y \
     python3 python3-venv python3-pip \
     curl unzip \
-    python3-pyqt5 \
+    python3-pyqt5 python3-pyqt5.qtsvg \
     libxcb-xinerama0 \
     bluez bluetooth \
+    pulseaudio-utils \
     fonts-noto-cjk
 
 # バージョン情報を取得
