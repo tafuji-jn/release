@@ -35,7 +35,7 @@ echo ""
 # 既存のインストールがあるか確認
 if [ -d "$INSTALL_DIR" ]; then
     echo -e "${YELLOW}警告: ${INSTALL_DIR} は既に存在します。${NC}"
-    read -p "上書きしますか？ (y/N): " confirm
+    read -p "上書きしますか？ (y/N): " confirm < /dev/tty
     if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
         echo "インストールを中止しました。"
         exit 0
@@ -90,7 +90,7 @@ rm -rf "$TEMP_DIR"
 # Python仮想環境をセットアップ
 echo -e "${GREEN}[5/5] Python環境をセットアップ中...${NC}"
 cd "$INSTALL_DIR"
-python3 -m venv venv
+python3 -m venv --system-site-packages venv
 source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
