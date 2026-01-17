@@ -12,7 +12,7 @@ curl -fsSL https://raw.githubusercontent.com/tafuji-jn/release/main/thinmonitort
 
 ## 認証セットアップ
 
-Raspberry Piはブラウザ認証が難しいため、**別端末（PC等）で認証を行い、トークンファイルをコピー**します。
+Raspberry Piはブラウザ認証が難しいため、**Windows PCで認証を行い、トークンファイルをコピー**します。
 
 ### 1. API認証情報の準備
 
@@ -42,18 +42,20 @@ Raspberry Piはブラウザ認証が難しいため、**別端末（PC等）で�
 }
 ```
 
-### 2. 別端末（Windows）で認証を実行
+### 2. Windows PCで認証を実行
 
-Windows PCで認証セットアップスクリプトを実行：
-
-```cmd
-py -m pip install google-auth-oauthlib google-api-python-client spotipy
-py auth_setup.py all
-```
+1. [auth_setup.exe をダウンロード](https://raw.githubusercontent.com/tafuji-jn/release/main/thinmonitortool/auth_setup.exe)
+2. `credentials.json` と `spotify_credentials.json` を同じフォルダに配置
+3. `auth_setup.exe` を実行（ブラウザが開いて認証）
 
 ### 3. Raspberry Piにファイルをコピー
 
 認証完了後、以下のファイルをRaspberry Piにコピー：
+
+- `credentials.json`
+- `token.pickle`
+- `spotify_credentials.json`
+- `.spotify_token_cache`
 
 ```bash
 scp credentials.json token.pickle spotify_credentials.json .spotify_token_cache pi@raspberrypi:~/thinmonitortool/
@@ -83,4 +85,3 @@ crontab -e
 ## 更新方法
 
 アプリの設定メニューから「アプリ更新チェック」をタップ。
-
